@@ -9,6 +9,8 @@ Config.KeyDeleteSpeaker = 194
 Config.KeyToMove = 311
 Config.KeyToPlaceSpeaker = 191
 Config.KeyToChangeAnim = 311
+Config.RadioProp = 'gordela_boombox3' -- Defina o prop do rádio (default = prop_boombox_01)
+
 
 Config.Translations = {
     notEnoughDistance = 'Você deve manter um pouco mais de distância do outro alto-falante próximo.',

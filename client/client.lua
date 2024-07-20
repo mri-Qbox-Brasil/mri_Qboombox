@@ -194,8 +194,8 @@ Citizen.CreateThread(function()
                                 movingASpeaker = true
                                 local ped = PlayerPedId()
                                 local x, y, z = table.unpack(GetOffsetFromEntityInWorldCoords(ped, 0.0, 3.0, 0.5))
-                                local obj = CreateObjectNoOffset('prop_boombox_01', x, y, z, true, false)
-                                SetModelAsNoLongerNeeded('prop_boombox_01')
+                                local obj = CreateObjectNoOffset(Config.RadioProp, x, y, z, true, false)
+                                SetModelAsNoLongerNeeded(Config.RadioProp)
                                 movingObject = obj
                                 movingSpeakerId = k
                                 if gangAnim then

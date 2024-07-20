@@ -308,7 +308,7 @@ function CreateSpeaker(src)
         end
         TriggerClientEvent('mri_Qboombox:client:doAnim', src)
         Citizen.Wait(1000)
-        local obj = CreateObject('prop_boombox_01', data.coords - vector3(0.0, 0.0, 1.0), true, false, true)
+        local obj = CreateObject(Config.RadioProp, data.coords - vector3(0.0, 0.0, 1.0), true, false, true)
         table.insert(objects, obj)
         TriggerClientEvent('mri_Qboombox:client:insertSpeaker', -1, data)
     else
@@ -345,7 +345,7 @@ RegisterNetEvent('mri_Qboombox:server:updateObjectCoords', function(id)
     local src = source
     if Speakers[id].isMoving and Speakers[id].playerMoving == src then
         local coords = GetEntityCoords(GetPlayerPed(src))
-        local obj = CreateObject('prop_boombox_01', coords - vector3(0.0, 0.0, 1.0), true, false, true)
+        local obj = CreateObject(Config.RadioProp, coords - vector3(0.0, 0.0, 1.0), true, false, true)
         objects[id] = obj
         Speakers[id].isMoving = false
         Speakers[id].coords = coords
