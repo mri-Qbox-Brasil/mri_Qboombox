@@ -35,7 +35,7 @@ export default function ModalAddPlaylist({opened, close, newPlaylist}:Props) {
 
     return (
         <Modal opened={opened} onClose={close} title={newPlaylistLabel}>
-            <Input.Wrapper label={playlistName} required maw={320} mx="auto" onChange={(event) => setName((event.target as HTMLInputElement).value)}>
+            <Input.Wrapper required maw={320} mx="auto" onChange={(event) => setName((event.target as HTMLInputElement).value)}>
                 <Input<any>
                     placeholder={playlistName}
                 />

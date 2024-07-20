@@ -29,7 +29,7 @@ export default function Cover({ playlist, width }: Props) {
                 <div className="playlist-cover-large" style={{ width: `${width * 2}vw`, height: `${width * 2}vw`, overflow: 'hidden' }}>
                     <img
                         className="playlist-cover-image"
-                        src={playlist.songs.length === 0 ? 'https://media.discordapp.net/attachments/919641744704954461/1128672258425114726/Screenshot_1.png' : `https://i.ytimg.com/vi/${playlist.songs[0].url}/mqdefault.jpg`}
+                        src={playlist.songs.length === 0 ? 'https://assets.mriqbox.com.br/scripts/example_cover.png' : `https://i.ytimg.com/vi/${playlist.songs[0].url}/mqdefault.jpg`}
                         alt={'defaulet'}
                     />
                 </div>

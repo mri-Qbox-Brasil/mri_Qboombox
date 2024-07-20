@@ -58,7 +58,7 @@ const App: React.FC = () => {
     const [name, setName] = useState('Unkown')
     const [timeZone, setTimeZone] = useState('')
     const [author, setAuthor] = useState('Unkown')
-    const [image, setImage] = useState('https://media.discordapp.net/attachments/919641744704954461/1128672258425114726/Screenshot_1.png')
+    const [image, setImage] = useState('https://assets.mriqbox.com.br/scripts/example_cover.png')
 
     const playSong = (songUrl : string, playlist: Playlist, index: number) => {
         setAuthor(playlist.songs[index].author);
