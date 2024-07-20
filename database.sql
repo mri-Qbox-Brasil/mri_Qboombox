@@ -1,4 +1,4 @@
-CREATE TABLE `gacha_playlists` (
+CREATE TABLE `mri_qplaylists` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(50) NOT NULL DEFAULT '0',
 	`owner` VARCHAR(255) NOT NULL DEFAULT '',
@@ -6,7 +6,7 @@ CREATE TABLE `gacha_playlists` (
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `gacha_songs` (
+CREATE TABLE `mri_qsongs` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`url` VARCHAR(50) NOT NULL DEFAULT '0',
 	`name` VARCHAR(150) NOT NULL DEFAULT '0',
@@ -17,23 +17,23 @@ CREATE TABLE `gacha_songs` (
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `gacha_playlists_users` (
+CREATE TABLE `mri_qplaylists_users` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`license` VARCHAR(255) NOT NULL DEFAULT '',
 	`playlist` INT NOT NULL DEFAULT 0,
 	INDEX `license` (`license`),
 	PRIMARY KEY (`id`),
-	CONSTRAINT `FK__gacha_playlists_users` FOREIGN KEY (`playlist`) REFERENCES `gacha_playlists` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT `FK__mri_qplaylists_users` FOREIGN KEY (`playlist`) REFERENCES `mri_qplaylists` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `gacha_playlist_songs` (
+CREATE TABLE `mri_qplaylist_songs` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`playlist` INT NOT NULL DEFAULT '0',
 	`song` INT NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`),
-	CONSTRAINT `FK__gacha_playlists` FOREIGN KEY (`playlist`) REFERENCES `gacha_playlists` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `FK__gacha_songs` FOREIGN KEY (`song`) REFERENCES `gacha_songs` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT `FK__mri_qplaylists` FOREIGN KEY (`playlist`) REFERENCES `mri_qplaylists` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `FK__mri_qsongs` FOREIGN KEY (`song`) REFERENCES `mri_qsongs` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 )
 COLLATE='utf8mb4_general_ci'
 ;

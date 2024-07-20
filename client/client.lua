@@ -29,7 +29,7 @@ RegisterNUICallback('hideFrame', function(_, cb)
 end)
 
 function LoadSpeakers()
-    TriggerCallback('gacha_boombox:callback:getBoomboxs', function(result)
+    TriggerCallback('mri_Qboombox:callback:getBoomboxs', function(result)
         print('Try to load Speakers in nui')
         SendReactMessage('createReproGlobal', result)
         Wait(200)
@@ -44,16 +44,16 @@ RegisterNUICallback('webLoaded', function()
 end)
 
 RegisterNUICallback('playSong', function(data)
-    TriggerServerEvent('gacha_boombox:server:Playsong', data)
+    TriggerServerEvent('mri_Qboombox:server:Playsong', data)
 end)
 
 RegisterNUICallback('getNewPlaylist', function(data, cb)
-    TriggerCallback('gacha_boombox:callback:getNewPlaylist', function(result)
+    TriggerCallback('mri_Qboombox:callback:getNewPlaylist', function(result)
         cb(result)
     end, data)
 end)
 
-RegisterNetEvent('gacha_boombox:client:notify', function(msg)
+RegisterNetEvent('mri_Qboombox:client:notify', function(msg)
     ShowNotification(msg)
 end)
 
@@ -62,37 +62,37 @@ RegisterNUICallback('tempChangeVolume', function (data)
 end)
 
 RegisterNUICallback('changeDist', function(data)
-    TriggerServerEvent('gacha_boombox:server:SyncNewDist', data)
+    TriggerServerEvent('mri_Qboombox:server:SyncNewDist', data)
 end)
 
 RegisterNUICallback('syncVolume', function(data)
-    TriggerServerEvent('gacha_boombox:server:SyncNewVolume', data)
+    TriggerServerEvent('mri_Qboombox:server:SyncNewVolume', data)
 end)
 
 RegisterNUICallback('deletePlayList', function(data)
-    TriggerServerEvent('gacha_boombox:server:deletePlayList', data)
+    TriggerServerEvent('mri_Qboombox:server:deletePlayList', data)
 end)
 
 RegisterNUICallback('importNewPlaylist', function(data)
-    TriggerServerEvent('gacha_boombox:server:importNewPlaylist', data)
+    TriggerServerEvent('mri_Qboombox:server:importNewPlaylist', data)
 end)
 
-RegisterNetEvent('gacha_boombox:client:updateBoombox', function(id, data)
+RegisterNetEvent('mri_Qboombox:client:updateBoombox', function(id, data)
     speakers[id] = data
     if (id - 1) == reproInUi then
         SendReactMessage('sendSongInfo', {author= speakers[id].playlistPLaying.songs[speakers[id].songId].author, name = speakers[id].playlistPLaying.songs[speakers[id].songId].name, url = speakers[id].url, volume = speakers[id].volume, dist = speakers[id].maxDistance, maxDuration = speakers[id].maxDuration, paused = speakers[id].paused, pausedTime = speakers[id].pausedTime})
     end
 end)
 
-RegisterNetEvent('gacha_boombox:client:updateVolume', function(id, vol)
+RegisterNetEvent('mri_Qboombox:client:updateVolume', function(id, vol)
     speakers[id].volume = vol
 end)
 
-RegisterNetEvent('gacha_boombox:client:updateDist', function(id, dist)
+RegisterNetEvent('mri_Qboombox:client:updateDist', function(id, dist)
     speakers[id].maxDistance = dist
 end)
 
-RegisterNetEvent('gacha_boombox:client:doAnim', function()
+RegisterNetEvent('mri_Qboombox:client:doAnim', function()
     if not HasAnimDictLoaded('anim@heists@money_grab@briefcase') then
         RequestAnimDict('anim@heists@money_grab@briefcase')
 
@@ -105,36 +105,36 @@ RegisterNetEvent('gacha_boombox:client:doAnim', function()
     ClearPedTasks(PlayerPedId())
 end)
 
-RegisterNetEvent('gacha_boombox:client:insertSpeaker', function(data)
+RegisterNetEvent('mri_Qboombox:client:insertSpeaker', function(data)
     table.insert(speakers, data)
     SendReactMessage('createRepro', data.url)
 end)
 
-RegisterNetEvent('gacha_boombox:client:deleteBoombox', function(id)
+RegisterNetEvent('mri_Qboombox:client:deleteBoombox', function(id)
     speakers[id].permaDisabled = true
 end)
 
 RegisterNUICallback('prevSong', function(data)
     if data.repro == reproInUi then
-        TriggerServerEvent('gacha_boombox:server:prevSong', data)
+        TriggerServerEvent('mri_Qboombox:server:prevSong', data)
     end
 end)
 
 RegisterNUICallback('nextSong', function(data)
     if data.repro == reproInUi then
-        TriggerServerEvent('gacha_boombox:server:nextSong', data)
+        TriggerServerEvent('mri_Qboombox:server:nextSong', data)
     end
 end)
 
 RegisterNUICallback('pauseSong', function(data)
     if data.repro == reproInUi then
-        TriggerServerEvent('gacha_boombox:server:pauseSong', data)
+        TriggerServerEvent('mri_Qboombox:server:pauseSong', data)
     end
 end)
 
 RegisterNUICallback('syncNewTime', function(data)
     if data.repro == reproInUi then
-        TriggerServerEvent('gacha_boombox:server:syncNewTime', data)
+        TriggerServerEvent('mri_Qboombox:server:syncNewTime', data)
     end
 end)
 
@@ -185,11 +185,11 @@ Citizen.CreateThread(function()
                         reproInUi = k - 1
                     end
                     if IsControlJustPressed(1, Config.KeyDeleteSpeaker) and not isInUI and not movingASpeaker then
-                        TriggerServerEvent('gacha_boombox:server:deleteBoombox', k, v.coords.x)
+                        TriggerServerEvent('mri_Qboombox:server:deleteBoombox', k, v.coords.x)
                         Wait(200)
                     end
                     if IsControlJustPressed(1, Config.KeyToMove) and not movingASpeaker then
-                        TriggerCallback('gacha_boombox:callback:canMove', function(canMove)
+                        TriggerCallback('mri_Qboombox:callback:canMove', function(canMove)
                             if canMove then
                                 movingASpeaker = true
                                 local ped = PlayerPedId()
@@ -246,7 +246,7 @@ Citizen.CreateThread(function()
                 Citizen.Wait(1000)
                 ClearPedTasks(PlayerPedId())
                 DeleteEntity(movingObject)
-                TriggerServerEvent('gacha_boombox:server:updateObjectCoords', movingSpeakerId)
+                TriggerServerEvent('mri_Qboombox:server:updateObjectCoords', movingSpeakerId)
                 movingSpeakerId = 0
                 movingASpeaker = false
             end
@@ -267,7 +267,7 @@ Citizen.CreateThread(function()
     end
 end)
 
-RegisterNetEvent('gacha_boombox:client:updatePlayerMoving', function(id, src)
+RegisterNetEvent('mri_Qboombox:client:updatePlayerMoving', function(id, src)
     speakers[id].isMoving = true
     speakers[id].playerMoving = src
 end)
@@ -280,30 +280,30 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 RegisterNUICallback('getPlaylists', function(_, cb)
-    TriggerCallback('gacha_boombox:callback:getPlaylists', function(result)
+    TriggerCallback('mri_Qboombox:callback:getPlaylists', function(result)
         cb(result)
     end)
 end)
 
-RegisterNetEvent('gacha_boombox:client:syncLastCoords', function(id, coords)
+RegisterNetEvent('mri_Qboombox:client:syncLastCoords', function(id, coords)
     speakers[id].coords = coords
     speakers[id].isMoving = false
     speakers[id].playerMoving = -2
 end)
 
-RegisterNetEvent('gacha_boombox:client:syncLastCoordsSync', function(id, coords)
+RegisterNetEvent('mri_Qboombox:client:syncLastCoordsSync', function(id, coords)
     speakers[id].coords = coords
 end)
 
 RegisterNUICallback('addSong', function(data)
-    TriggerServerEvent('gacha_boombox:server:addSong', data)
+    TriggerServerEvent('mri_Qboombox:server:addSong', data)
 end)
 
 RegisterNUICallback('deleteSongPlaylist', function(data)
-    TriggerServerEvent('gacha_boombox:server:deleteSongPlaylist', data)
+    TriggerServerEvent('mri_Qboombox:server:deleteSongPlaylist', data)
 end)
 
-RegisterNetEvent('gacha_boombox:client:resyncPlaylists', function ()
+RegisterNetEvent('mri_Qboombox:client:resyncPlaylists', function ()
     SendReactMessage('getPlaylists')
 end)
 
