@@ -26,8 +26,11 @@ server_script {
 files {
 	'web/build/index.html',
 	'web/build/**/*',
+  'stream/gordela_boombox3.ytyp'
 }
 
 dependencies {
   'oxmysql'
 }
+
+data_file 'DLC_ITYP_REQUEST' 'stream/gordela_boombox3.ytyp'

@@ -1,3 +1,7 @@
+Prop da Boombox feito por Gordela.
+Script mantido pela comunidade para funcionar com a base mri Qbox.
+
+Créditos ao autor:
 Important
 You need to import the sql file in to your database
 
