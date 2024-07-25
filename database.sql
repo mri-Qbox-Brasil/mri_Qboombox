@@ -1,4 +1,4 @@
-CREATE TABLE `mri_qplaylists` (
+CREATE TABLE IF NOT EXISTS `mri_qplaylists` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(50) NOT NULL DEFAULT '0',
 	`owner` VARCHAR(255) NOT NULL DEFAULT '',
@@ -6,7 +6,7 @@ CREATE TABLE `mri_qplaylists` (
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `mri_qsongs` (
+CREATE TABLE IF NOT EXISTS `mri_qsongs` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`url` VARCHAR(50) NOT NULL DEFAULT '0',
 	`name` VARCHAR(150) NOT NULL DEFAULT '0',
@@ -17,7 +17,7 @@ CREATE TABLE `mri_qsongs` (
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `mri_qplaylists_users` (
+CREATE TABLE IF NOT EXISTS `mri_qplaylists_users` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`license` VARCHAR(255) NOT NULL DEFAULT '',
 	`playlist` INT NOT NULL DEFAULT 0,
@@ -27,7 +27,7 @@ CREATE TABLE `mri_qplaylists_users` (
 )
 COLLATE='utf8mb4_general_ci'
 ;
-CREATE TABLE `mri_qplaylist_songs` (
+CREATE TABLE IF NOT EXISTS `mri_qplaylist_songs` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`playlist` INT NOT NULL DEFAULT '0',
 	`song` INT NOT NULL DEFAULT '0',

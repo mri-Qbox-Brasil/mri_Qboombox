@@ -1,6 +1,6 @@
 Config = Config or {}
 Config.framework = 'qbcore' --(qbcore/esx/custom)
-Config.useItem = true
+Config.useItem = true -- If disabled, you can use the command /createSpeaker
 Config.fixSpeakersCommand = "fixSpeakers" --If speakers dont load use this command to reload all the speakers
 Config.itemName = 'speaker' --You need to had this item created in your config or database
 Config.timeZone = "America/Sao_Paulo" --IMPORTANT to set what time zone is your server in https://gist.github.com/mur4i/357734b2baebe353fe932302fb561650
