@@ -55,7 +55,7 @@ if Config.useItem then
         --Import your usableItem function
     end
 else
-    RegisterCommand('createSpeaker', function(source)
+    RegisterCommand(Config.createSpeaker, function(source)
         local src = source
         CreateSpeaker(src)
     end)

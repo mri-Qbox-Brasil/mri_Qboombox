@@ -311,6 +311,10 @@ RegisterNUICallback('getLibraryLabel', function(_, cb)
     cb(Config.Translations.libraryLabel)
 end)
 
+RegisterNUICallback('getSearchLabel', function(_, cb)
+    cb(Config.Translations.searchLabel)
+end)
+
 RegisterNUICallback('newPlaylistLabel', function(_, cb)
     cb(Config.Translations.newPlaylistLabel)
 end)

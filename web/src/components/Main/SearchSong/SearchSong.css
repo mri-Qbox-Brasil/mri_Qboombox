@@ -1,0 +1,57 @@
+.searchSongHeader {
+  display: flex;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+}
+.searchInput {
+  font-family: "Trebuchet MS", sans-serif;
+  color: #333;
+  font-size: 0.8rem;
+  margin: 0 0 0 1.5vw;
+  border-radius: 0.2rem;
+  background-color: rgb(255, 255, 255);
+  border: none;
+  width: 16rem;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+}
+
+.searchLabel {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.2rem;
+  margin-left: 2rem;
+  margin-top: 0.7rem;
+  display: block;
+  transition: all 0.3s;
+  transform: translateY(0rem);
+}
+
+.searchSongContainer {
+  background-color: #121212;
+  width: 37.5vw;
+  padding: 10px;
+  border-radius: 9px;
+  min-height: "35vh";
+  height: 35vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.searchResultContainer {
+  max-height: "35vh";
+  overflow-y: auto;
+  border: "10px solid #ccc";
+  padding: "10px";
+}
+
+.searchResultItem {
+  display: flex;
+  flex-direction: row;
+  font-size: 1.2vh;
+  gap: 8px;
+  background: rgba(219, 215, 232, 0.061);
+  margin-bottom: 3vh;
+}

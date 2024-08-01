@@ -6,6 +6,7 @@ import { VideoObject } from '../App';
 import { fetchNui } from '../../utils/fetchNui';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import ModalAddPlaylist from './Library/LibraryMenu/ModalAddPlaylist/ModalAddPlaylist';
+import SearchSong from './SearchSong/SearchSong';
 
 interface Props {
     playSong: (songUrl: string, playlist: Playlist, index: number) => void;
@@ -54,7 +55,9 @@ export default function Main({playSong}:Props) {
     useNuiEvent('getPlaylists', getPlaylists);
     return (
         <div className="main">
-            <Library Playlists={Playlists} setPlaylistActive={setPlaylistActive} playlistActive={playlistActive} setOpenedPlaylist={setOpenedCreatePlaylist}/>
+            
+            {/* <Library Playlists={Playlists} setPlaylistActive={setPlaylistActive} playlistActive={playlistActive} setOpenedPlaylist={setOpenedCreatePlaylist}/> */}
+            <SearchSong Playlists={Playlists} setPlaylistActive={setPlaylistActive} playlistActive={playlistActive} setOpenedPlaylist={setOpenedCreatePlaylist}/>
             <DisplayPlaylist Playlists={Playlists} playlistActive={playlistActive} playSong={playSong} exitPlaylist={()=>{deletePlaylist()}} setOpenedPlaylist={setOpenedCreatePlaylist}/>
             <ModalAddPlaylist opened={openedCreatePlaylist} close={()=>{setOpenedCreatePlaylist(false)}} newPlaylist={newPlaylist} />
         </div>
