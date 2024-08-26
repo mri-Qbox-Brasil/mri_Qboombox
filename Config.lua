@@ -1,13 +1,5 @@
 Config = Config or {}
 
--- TEST HUDS
-Config.ApiKey = "AIzaSyAUrVmetppeCIVDMkLP8_8Thdtaqu09_Ik"
-Config.MaxResults = 15
-Config.Debug = true
-Config.ResultTimeout = 30
--- fim
-
-
 Config.framework = 'qbcore' --(qbcore/esx/custom)
 Config.useItem = false -- If disabled, you can use the command /createSpeaker
 Config.fixSpeakersCommand = "fixSpeakers" --If speakers dont load use this command to reload all the speakers
