@@ -1,18 +1,17 @@
-import { Books, Heart, PlayerPlay, Search } from "tabler-icons-react";
-import { Plus } from "tabler-icons-react";
+import { PlayerPlay, Plus, Search } from "tabler-icons-react";
 import { ActionIcon } from "@mantine/core";
-import Cover from "../../Common/Cover";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchNui } from "../../../utils/fetchNui";
-import "./SearchSong.css";
+import "../../../App.css";
+import { waveform } from "ldrs";
 
 interface SearchResult {
-    title: string;
-    description: string;
-    thumbnail: string;
-    videoId: string;
-    url: string;
-  }
+  title: string;
+  description: string;
+  thumbnail: string;
+  videoId: string;
+  url: string;
+}
 
 export interface Song {
   id: number;
@@ -29,6 +28,7 @@ export interface Playlist {
 }
 
 interface Props {
+  playSong: (songUrl: string, playlist: Playlist, index: number) => void;
   Playlists: Playlist[];
   setPlaylistActive: (i: number) => void;
   playlistActive: number;
@@ -36,15 +36,16 @@ interface Props {
 }
 
 export default function SearchSong({
+  playSong,
   Playlists,
-  setPlaylistActive,
   playlistActive,
   setOpenedPlaylist,
 }: Props) {
   const [searchLabel, setSearchLabel] = useState("Search song by name or URL");
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [debounceTimeout, setDebounceTimeout] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
 
   const getSearchLabel = async () => {
@@ -58,154 +59,181 @@ export default function SearchSong({
     }
   };
 
+
+
+  const fetchSearchResults = async (query: string) => {
+    setLoading(true);
+  
+    const mockData = [
+      {
+        title: "FINGI SER LEIGO E TENTEI COMPRAR UM PC GAMER NA SANTA IFIGÊNIA",
+        description: "https://www.youtube.com/watch?v=M_Khlu_N4-g",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "1",
+        url: "https://youtube.com",
+      },
+      {
+        title: "Música Teste 2",
+        description: "Nome do Canal",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "2",
+        url: "https://youtube.com",
+      },
+      {
+        title: "Slipknot - Surfacing (Official Music Video) [HD]",
+        description: "Slipknot",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "3",
+        url: "https://youtube.com",
+      },
+      {
+        title: "Música Teste 4",
+        description: "Nome do Canal",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "4",
+        url: "https://youtube.com",
+      },
+      {
+        title: "Música Teste 5",
+        description: "Nome do Canal",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "5",
+        url: "https://youtube.com",
+      },
+      {
+        title: "Música Teste 6",
+        description: "Nome do Canal",
+        thumbnail: "https://picsum.photos/200/300",
+        videoId: "6",
+        url: "https://youtube.com",
+      },
+    ];
+  
+    try {
+      const results = await fetchNui("getSearchFromApitube", { query });
+  
+      if (results.length > 0) {
+        setSearchResults(results);
+      } else {
+        console.warn("No results found, setting mock data");
+        setSearchResults(mockData); // Usa mock se nenhum resultado for encontrado
+      }
+    } catch (error) {
+      console.error("Error fetching search results, setting mock data:", error);
+      setSearchResults(mockData); // Usa mock data em caso de erro
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const debounce = useCallback(
+    (func: (...args: any[]) => void, delay: number) => {
+      let timeout: number;
+      return (...args: any[]) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          func(...args);
+        }, delay);
+      };
+    },
+    []
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+
+  const truncateString = (str: string, maxLength: number): string => {
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength) + '...';
+    }
+    return str;
+  };
+
+  // const removeFocus = () => {
+  //   return () => {
+  //     if (inputRef.current) {
+  //       inputRef.current.blur();
+  //     }
+  //   };
+  // }
+
+  waveform.register();
+
+  //EFFECTS
+
+useEffect(() => {
+  setLoading(true);
+  if (inputValue.length >= 3) {
+    const debouncedFetch = debounce(() => {
+      fetchSearchResults(inputValue);
+    }, 500);
+
+    debouncedFetch();
+   
+  } else {
+    setSearchResults([]);
+    setLoading(false);
+  }
+}, [inputValue]);
+  
+
   useEffect(() => {
     getSearchLabel();
   }, []);
 
-  useEffect(() => {
-
-  }, [inputValue]);
-
-  // Debounce function to delay API calls
-//   const debounce = useCallback((func, delay) => {
-//     return (...args) => {
-//       if (debounceTimeout) {
-//         clearTimeout(debounceTimeout);
-//       }
-//       const timeout = setTimeout(() => {
-//         func(...args);
-//       }, delay);
-//       setDebounceTimeout(timeout);
-//     };
-//   }, [debounceTimeout]);
-
-//   const fetchSearchResults = async (query) => {
-//     try {
-//       const response = await axios.get(`YOUR_API_ENDPOINT?q=${query}`);
-//       const results = response.data.items.map(v => ({
-//         title: v.snippet.title,
-//         description: v.snippet.description,
-//         thumbnail: v.snippet.thumbnails.default.url,
-//         videoId: v.id.videoId,
-//         url: `https://www.youtube.com/watch?v=${v.id.videoId}`
-//       }));
-//       setSearchResults(results);
-//     } catch (error) {
-//       console.error('Error fetching search results:', error);
-//     }
-//   };
-// Debounce function to delay API calls
-
-const debounce = useCallback((func, delay) => {
-    return (...args) => {
-      if (debounceTimeout) {
-        clearTimeout(debounceTimeout);
-      }
-      const timeout = setTimeout(() => {
-        func(...args);
-      }, delay);
-      setDebounceTimeout(timeout);
-    };
-  }, [debounceTimeout]);
-
-const fetchSearchResults = async (query) => {
-    try {
-      // Simula o delay da API
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Dados Mockado
-      const mockResponse = {
-        data: {
-          items: [
-            {
-              snippet: {
-                title: `Mock Song Title 1 for ${query}`,
-                description: `Description for Mock Song 1`,
-                thumbnails: { default: { url: 'https://via.placeholder.com/40' } }
-              },
-              id: { videoId: 'mockVideoId1' }
-            },
-            {
-              snippet: {
-                title: `Mock Song Title 2 for ${query}`,
-                description: `Description for Mock Song 2`,
-                thumbnails: { default: { url: 'https://via.placeholder.com/40' } }
-              },
-              id: { videoId: 'mockVideoId2' }
-            },
-            {
-                snippet: {
-                  title: `Mock Song Title 3 for ${query}`,
-                  description: `Description for Mock Song 3`,
-                  thumbnails: { default: { url: 'https://via.placeholder.com/40' } }
-                },
-                id: { videoId: 'mockVideoId3' }
-              },
-
-              {
-                snippet: {
-                  title: `Mock Song Title 4 for ${query}`,
-                  description: `Description for Mock Song 4`,
-                  thumbnails: { default: { url: 'https://via.placeholder.com/40' } }
-                },
-                id: { videoId: 'mockVideoId4' }
-              }
-          ]
-        }
-      };
-
-      const mockResults: SearchResult[] = mockResponse.data.items.map(v => ({
-        title: v.snippet.title,
-        description: v.snippet.description,
-        thumbnail: v.snippet.thumbnails.default.url,
-        videoId: v.id.videoId,
-        url: `https://www.youtube.com/watch?v=${v.id.videoId}`
-      }));
-      setSearchResults(mockResults)
-    //   setSearchResults(results);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
-    if (value.length >= 3) {
-      debounce(() => fetchSearchResults(value), 300)();
-    }
-  };
-
   return (
     <div className="searchSongContainer">
-        <div className="searchSongHeader">
-          <Search strokeWidth={2} color={"white"} />
-          <input
-            className="searchInput"
-            type="text"
-            placeholder={searchLabel}
-            value={inputValue}
-        onChange={handleInputChange}
-          />
+      <div className="searchSongHeader">
+        <Search strokeWidth={2} color={"white"} />
+        <input
+          className="searchInput"
+          type="text"
+          placeholder={searchLabel}
+          value={inputValue}
+          onChange={handleInputChange}
+          ref={inputRef}
+        />
+      </div>
+      <div className="searchResultContainer">
+        {loading && (<div className="loading">
+          <l-waveform
+            size="35"
+            stroke="3.5"
+            speed="1"
+            color="white"
+          ></l-waveform>
         </div>
-        {/* <div className="addPlaylists">
-          <LibraryMenu setOpenedPlaylist={setOpenedPlaylist} />
-        </div> */}
-   <div className="searchResultContainer">
+          
+        )}
 
-        {searchResults.map((result, index) => (
-          <div className="searchResultItem" key={index}>
-            <img src={result.thumbnail} alt={result.title} />
-            <h3>{result.title}</h3>
-            <p>{result.description}</p>
-            <a href={result.url} target="_blank" rel="noopener noreferrer">   
+        {!loading &&
+          searchResults.map((result, index) => (
+            <div className="searchResultItem" key={index}>
+              <img className="thumbnail" src={result.thumbnail} alt={result.title} />
+              <h3>{truncateString(result.title, 22)}</h3>
+              <p>{truncateString(result.description, 60)}</p>
+              <a href={result.url} target="_blank" rel="noopener noreferrer">
+                {/* TODO MUSIC REPRO INTEGRATION*/}
+                {/* <ActionIcon onClick={()=>{fetchNui("Playsong", result.url)}} color="green" style={{borderRadius: '20px'}} variant="filled">                            
+                <PlayerPlay color="black" strokeWidth={1}/>
+                </ActionIcon> */}
 
-            {/* TODO STATE MUSIC PLAYING*/}
-            <PlayerPlay strokeWidth={2} color={"white"} /> 
-            </a>
-          </div>
-        ))}
+                
+                <div className="fixedIcons">
+                <ActionIcon  onClick={()=>{console.log(result.url)}} color="green" style={{borderRadius: '20px'}} variant="filled">                            
+                <PlayerPlay color="black" strokeWidth={1}/>
+                </ActionIcon>
 
+                <ActionIcon  onClick={()=>{console.log(result.url)}} color="green" style={{borderRadius: '20px'}} variant="filled">                            
+                <Plus color="black" strokeWidth={1}/>
+                </ActionIcon>
+                </div>
+                
+              </a>
+            </div>
+          ))}
       </div>
     </div>
   );

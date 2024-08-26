@@ -36,11 +36,12 @@ body {
 .main {
     display: flex;
     gap: 1vw;
+    flex-direction: row;
 }
 
 .myPlaylists {
     background-color: #121212;
-    width: 37.5vw;
+    width: 20.5vw;
     padding: 10px;
     border-radius: 9px;
     height: 35vh;
@@ -52,7 +53,7 @@ body {
 
 .playlistSection {
     background-color: #121212;
-    width: 61.5vw;
+    width: 20.5vw;
     padding: 10px;
     border-radius: 9px;
     height: 35vh;
@@ -441,3 +442,97 @@ body {
     cursor: pointer;
     text-decoration: underline;
 }
+
+/* ghuds search song */
+
+.tabsContainer {
+    gap: 8px;
+    background-color: #000000;
+    width: 99%;
+}
+
+.searchSongHeader {
+    display: flex;
+    justify-content: center;
+    padding: 0.6rem 1rem;
+  }
+  .searchInput {
+    font-family: "Trebuchet MS", sans-serif;
+    color: #373737;
+    font-size: 0.8rem;
+    margin: 0 0 0 0.5vw;
+    border-radius: 0.2rem;
+    background-color: rgb(255, 255, 255);
+    border: none;
+    width: 26rem;
+    display: block;
+    border-bottom: 0.3rem solid transparent;
+  }
+  
+  .searchLabel {
+    font-family: "Roboto", sans-serif;
+    font-size: 1.2rem;
+    margin-left: 2rem;
+    margin-top: 0.7rem;
+    display: block;
+    transition: all 0.3s;
+    transform: translateY(0rem);
+  }
+  
+  .searchSongContainer {
+    background-color: #121212;
+    width: 100%;
+    padding: 10px;
+    border-radius: 9px;
+    min-height: "35vh";
+    height: 35vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .searchResultContainer {
+    justify-content: center;
+    max-height: "35vh";
+    overflow-y: auto;
+    border: "10px solid #ccc";
+    padding: "10px";
+  }
+  
+  .searchResultItem {
+    height: 8vh;
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2vh;
+    gap: 1.2vw;
+    background: rgba(219, 215, 232, 0.061);
+    margin-bottom: 1vh;
+    width: 99%;
+    border-radius: 0.5vh;
+  }
+  
+  .searchResultItem:hover {
+    background: rgba(219, 215, 232, 0.157);
+    cursor: pointer;
+  }
+
+  .fixedIcons {
+    position: relative;
+    left: 10vw;
+    
+  }
+  
+  .thumbnail {
+    height: 7vh;
+    margin-top: 0.2vw;
+    margin-left: 0.2vw;
+    width: 3.8vw;
+    border-radius: 0.5vh;
+  }
+  
+  .loading {
+    display: flex;
+    margin-left: 8.5vw;
+    margin-top: 10vh;
+  }

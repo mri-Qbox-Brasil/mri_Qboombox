@@ -12,7 +12,9 @@ games {
 ui_page 'web/build/index.html'
 
 -- shared_script '@es_extended/imports.lua' --Import this if you are using es_extended
-
+shared_scripts {
+  "@ox_lib/init.lua",
+}
 client_scripts {
   'Config.lua',
   "client/**/*"

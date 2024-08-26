@@ -23,6 +23,16 @@ local function toggleNuiFrame(shouldShow)
     end
 end
 
+--Ghds chamada apitube
+RegisterNUICallback('getSearchFromApitube', function(data, cb)
+    local results = lib.callback.await("apitube:server:search", false, data.query)
+    if results then
+        cb(results)
+    else
+        cb({})
+    end
+end)
+
 RegisterNUICallback('hideFrame', function(_, cb)
     toggleNuiFrame(false)
     cb({})
@@ -57,7 +67,7 @@ RegisterNetEvent('mri_Qboombox:client:notify', function(msg)
     ShowNotification(msg)
 end)
 
-RegisterNUICallback('tempChangeVolume', function (data)
+RegisterNUICallback('tempChangeVolume', function(data)
     speakers[data.repro + 1].volume = data.volume
 end)
 
@@ -80,7 +90,20 @@ end)
 RegisterNetEvent('mri_Qboombox:client:updateBoombox', function(id, data)
     speakers[id] = data
     if (id - 1) == reproInUi then
-        SendReactMessage('sendSongInfo', {author= speakers[id].playlistPLaying.songs[speakers[id].songId].author, name = speakers[id].playlistPLaying.songs[speakers[id].songId].name, url = speakers[id].url, volume = speakers[id].volume, dist = speakers[id].maxDistance, maxDuration = speakers[id].maxDuration, paused = speakers[id].paused, pausedTime = speakers[id].pausedTime})
+        SendReactMessage('sendSongInfo',
+            {
+                author = speakers[id].playlistPLaying.songs[speakers[id].songId].author,
+                name = speakers[id]
+                    .playlistPLaying.songs[speakers[id].songId].name,
+                url = speakers[id].url,
+                volume = speakers[id].volume,
+                dist =
+                    speakers[id].maxDistance,
+                maxDuration = speakers[id].maxDuration,
+                paused = speakers[id].paused,
+                pausedTime =
+                    speakers[id].pausedTime
+            })
     end
 end)
 
@@ -100,7 +123,8 @@ RegisterNetEvent('mri_Qboombox:client:doAnim', function()
             Citizen.Wait(1)
         end
     end
-    TaskPlayAnim(PlayerPedId(), 'anim@heists@money_grab@briefcase', 'put_down_case', 8.0, -8.0, -1, 1, 0, false, false, false)
+    TaskPlayAnim(PlayerPedId(), 'anim@heists@money_grab@briefcase', 'put_down_case', 8.0, -8.0, -1, 1, 0, false, false,
+        false)
     Citizen.Wait(1000)
     ClearPedTasks(PlayerPedId())
 end)
@@ -153,7 +177,7 @@ Citizen.CreateThread(function()
         local sleep = 500
         local player = PlayerPedId()
         local playerCoords = GetEntityCoords(player)
-        for k,v in pairs(speakers) do
+        for k, v in pairs(speakers) do
             local distance = #(v.coords - playerCoords)
             if distance < v.maxDistance + 10 and sleep >= 100 then
                 sleep = 100
@@ -161,25 +185,44 @@ Citizen.CreateThread(function()
             if distance < v.maxDistance and not v.permaDisabled then
                 sleep = 5
                 if not v.isPlaying and v.url ~= '' and not v.paused then
-                    SendReactMessage('playSong', {repro = tonumber(k - 1), url = v.url, volume = v.volume, time = v.time})
+                    SendReactMessage('playSong', {
+                        repro = tonumber(k - 1),
+                        url = v.url,
+                        volume = v.volume,
+                        time = v
+                            .time
+                    })
                     v.isPlaying = true
                 end
                 if not v.paused then
-                    SendReactMessage('changeVolume', {repro = tonumber(k - 1), volume = tonumber(v.volume - (distance * v.volume / v.maxDistance))})
+                    SendReactMessage('changeVolume',
+                        { repro = tonumber(k - 1), volume = tonumber(v.volume - (distance * v.volume / v.maxDistance)) })
                 else
-                    SendReactMessage('changeVolume', {repro = tonumber(k - 1), volume = 0})
+                    SendReactMessage('changeVolume', { repro = tonumber(k - 1), volume = 0 })
                 end
                 if distance < 1.5 and not v.isMoving then
                     if not movingASpeaker then
                         ShowHelpNotification(Config.Translations.helpNotify)
                     end
-                    if IsControlJustPressed(1, Config.KeyAccessUi)  and not movingASpeaker then
+                    if IsControlJustPressed(1, Config.KeyAccessUi) and not movingASpeaker then
                         SendReactMessage('setRepro', tonumber(k - 1))
                         if not playlistsLoaded then
                             SendReactMessage('getPlaylists')
                         end
                         if v.playlistPLaying.songs and v.playlistPLaying.songs[v.songId] then
-                            SendReactMessage('sendSongInfo', {author = v.playlistPLaying.songs[v.songId].author, name = v.playlistPLaying.songs[v.songId].name, url = v.url, volume = v.volume, dist = v.maxDistance, maxDuration = v.maxDuration, paused = v.paused, pausedTime = v.pausedTime})
+                            SendReactMessage('sendSongInfo',
+                                {
+                                    author = v.playlistPLaying.songs[v.songId].author,
+                                    name = v.playlistPLaying.songs
+                                        [v.songId].name,
+                                    url = v.url,
+                                    volume = v.volume,
+                                    dist = v.maxDistance,
+                                    maxDuration = v
+                                        .maxDuration,
+                                    paused = v.paused,
+                                    pausedTime = v.pausedTime
+                                })
                         end
                         toggleNuiFrame(true)
                         reproInUi = k - 1
@@ -200,10 +243,13 @@ Citizen.CreateThread(function()
                                 movingSpeakerId = k
                                 if gangAnim then
                                     LoadAnima()
-                                    TaskPlayAnim(PlayerPedId(), 'missfinale_c2mcs_1', 'fin_c2_mcs_1_camman', 8.0, -8.0, -1, 51, 0, false, false, false)
-                                    AttachEntityToEntity(obj, ped, GetPedBoneIndex(ped, 28422),0.0, 0.0, 0.1, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
+                                    TaskPlayAnim(PlayerPedId(), 'missfinale_c2mcs_1', 'fin_c2_mcs_1_camman', 8.0, -8.0,
+                                        -1, 51, 0, false, false, false)
+                                    AttachEntityToEntity(obj, ped, GetPedBoneIndex(ped, 28422), 0.0, 0.0, 0.1, 0.0, 0.0,
+                                        0.0, true, true, false, true, 1, true)
                                 else
-                                    AttachEntityToEntity(obj, ped, GetPedBoneIndex(ped, 57005), 0.32, 0, -0.05, 0.10, 270.0, 60.0, true, true, false, true, 1, true)
+                                    AttachEntityToEntity(obj, ped, GetPedBoneIndex(ped, 57005), 0.32, 0, -0.05, 0.10,
+                                        270.0, 60.0, true, true, false, true, 1, true)
                                 end
                             end
                         end, k)
@@ -242,7 +288,8 @@ Citizen.CreateThread(function()
                         Citizen.Wait(1)
                     end
                 end
-                TaskPlayAnim(PlayerPedId(), 'anim@heists@money_grab@briefcase', 'put_down_case', 8.0, -8.0, -1, 1, 0, false, false, false)
+                TaskPlayAnim(PlayerPedId(), 'anim@heists@money_grab@briefcase', 'put_down_case', 8.0, -8.0, -1, 1, 0,
+                    false, false, false)
                 Citizen.Wait(1000)
                 ClearPedTasks(PlayerPedId())
                 DeleteEntity(movingObject)
@@ -254,11 +301,14 @@ Citizen.CreateThread(function()
                 gangAnim = not gangAnim
                 if gangAnim then
                     LoadAnima()
-                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 28422),0.0, 0.0, 0.1, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
-                    TaskPlayAnim(PlayerPedId(), 'missfinale_c2mcs_1', 'fin_c2_mcs_1_camman', 8.0, -8.0, -1, 51, 0, false, false, false)
+                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 28422), 0.0, 0.0,
+                        0.1, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
+                    TaskPlayAnim(PlayerPedId(), 'missfinale_c2mcs_1', 'fin_c2_mcs_1_camman', 8.0, -8.0, -1, 51, 0, false,
+                        false, false)
                 else
                     ClearPedTasks(PlayerPedId())
-                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.32, 0, -0.05, 0.10, 270.0, 60.0, true, true, false, true, 1, true)
+                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.32, 0,
+                        -0.05, 0.10, 270.0, 60.0, true, true, false, true, 1, true)
                 end
             end
         end
@@ -303,7 +353,7 @@ RegisterNUICallback('deleteSongPlaylist', function(data)
     TriggerServerEvent('mri_Qboombox:server:deleteSongPlaylist', data)
 end)
 
-RegisterNetEvent('mri_Qboombox:client:resyncPlaylists', function ()
+RegisterNetEvent('mri_Qboombox:client:resyncPlaylists', function()
     SendReactMessage('getPlaylists')
 end)
 
@@ -351,6 +401,6 @@ RegisterNUICallback('timeZone', function(_, cb)
     cb(Config.timeZone)
 end)
 
-RegisterCommand(Config.fixSpeakersCommand, function ()
+RegisterCommand(Config.fixSpeakersCommand, function()
     LoadSpeakers()
 end)
