@@ -1,3 +1,5 @@
 .idea
 /web/build
 /web/build
+Config.lua
+node_modules
