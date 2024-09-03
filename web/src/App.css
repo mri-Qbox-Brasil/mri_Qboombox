@@ -41,7 +41,7 @@ body {
 
 .myPlaylists {
     background-color: #121212;
-    width: 20.5vw;
+    width: 25.5vw;
     padding: 10px;
     border-radius: 9px;
     height: 35vh;
@@ -53,7 +53,7 @@ body {
 
 .playlistSection {
     background-color: #121212;
-    width: 20.5vw;
+    width: 23.8vw;
     padding: 10px;
     border-radius: 9px;
     height: 35vh;
@@ -470,7 +470,7 @@ body {
   }
   
   .searchLabel {
-    font-family: "Roboto", sans-serif;
+    font-family: 'Trebuchet MS', sans-serif;
     font-size: 1.2rem;
     margin-left: 2rem;
     margin-top: 0.7rem;
@@ -504,11 +504,14 @@ body {
     height: 8vh;
     display: flex;
     flex-direction: row;
+    justify-content: space-evenly;
     font-size: 1.2vh;
     gap: 1.2vw;
     background: rgba(219, 215, 232, 0.061);
     margin-bottom: 1vh;
     width: 99%;
+    max-width: 50vw;
+
     border-radius: 0.5vh;
   }
   
@@ -516,23 +519,61 @@ body {
     background: rgba(219, 215, 232, 0.157);
     cursor: pointer;
   }
+  .resultTitle {
+    width: 26vw;
+    font-weight: bold;
+
+}
+
+  .resultAuthor {
+    width: 12vw;
+    font-size: 0.7rem;
+
+  }
 
   .fixedIcons {
-    position: relative;
-    left: 10vw;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
     
   }
   
   .thumbnail {
     height: 7vh;
-    margin-top: 0.2vw;
-    margin-left: 0.2vw;
+    margin-top: 0.3vw;
+
     width: 3.8vw;
     border-radius: 0.5vh;
   }
   
   .loading {
+    position: fixed;
     display: flex;
-    margin-left: 8.5vw;
+    margin-left: 22.4vw;
     margin-top: 10vh;
+    align-items: center;
+    flex-direction: column;
+    gap: 2vh;
+      }
+
+  /* Ghuds Loader */
+
+  .loaderContainer {
+    width: 100%;
+    height: 100%;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.8);
+   
+  }
+
+  .loaderText{
+    color: #fff;
+    font-size: 1.1rem;
+    text-transform: uppercase;
   }

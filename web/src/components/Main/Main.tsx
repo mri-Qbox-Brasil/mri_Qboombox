@@ -18,9 +18,11 @@ export default function Main({ playSong }: Props) {
   const [Playlists, setPlaylists] = useState<Playlist[]>([]);
   const [openedCreatePlaylist, setOpenedCreatePlaylist] = useState(false);
   const [playlistActive, setPlaylistActive] = useState(0);
+  const [activeTab, setActiveTab] = useState<string | null>("searchSong");
+
   const newPlaylist = async (name: string) => {
     try {
-      const res = await fetchNui<number>("getNewPlaylist", name);
+      const res = await fetchNui<number>("getNewPlaylist", name, 1);
       if (res) {
         if (Playlists.length === 0) {
           setPlaylists([{ id: res, name: name, songs: [] }]);
@@ -54,7 +56,6 @@ export default function Main({ playSong }: Props) {
 
   useNuiEvent("getPlaylists", getPlaylists);
 
-  const [activeTab, setActiveTab] = useState<string | null>("searchSong");
 
   return (
     <div className="main">
