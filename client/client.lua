@@ -148,6 +148,8 @@ function LoadAnima()
     end
 end
 
+TARGET_PICK_UP = false
+TARGET_DELETE = false
 Citizen.CreateThread(function()
     while true do
         local sleep = 500
@@ -184,11 +186,13 @@ Citizen.CreateThread(function()
                         toggleNuiFrame(true)
                         reproInUi = k - 1
                     end
-                    if IsControlJustPressed(1, Config.KeyDeleteSpeaker) and not isInUI and not movingASpeaker then
+                    if not isInUI and not movingASpeaker and TARGET_DELETE then
+                        TARGET_DELETE = false
                         TriggerServerEvent('mri_Qboombox:server:deleteBoombox', k, v.coords.x)
                         Wait(200)
                     end
-                    if IsControlJustPressed(1, Config.KeyToMove) and not movingASpeaker then
+                    if not movingASpeaker and TARGET_PICK_UP then
+                        TARGET_PICK_UP = false
                         TriggerCallback('mri_Qboombox:callback:canMove', function(canMove)
                             if canMove then
                                 movingASpeaker = true
@@ -350,3 +354,31 @@ end)
 RegisterCommand(Config.fixSpeakersCommand, function ()
     LoadSpeakers()
 end)
+
+
+exports.ox_target:addModel('gordela_boombox3', {
+    {
+        type = 'client',
+        icon = 'fa-solid fa-hand',
+        label = 'Carregar boombox',
+        onSelect = function(data)
+            local obj = data.entity
+
+            if obj and DoesEntityExist(obj) then
+                TARGET_PICK_UP = true
+            end
+        end
+    },
+    {
+        type = 'client',
+        icon = 'fa-solid fa-arrow-up-from-bracket',
+        label = 'Guardar boombox',
+        onSelect = function(data)
+            local obj = data.entity
+
+            if obj and DoesEntityExist(obj) then
+                TARGET_DELETE = true
+            end
+        end
+    }
+})
