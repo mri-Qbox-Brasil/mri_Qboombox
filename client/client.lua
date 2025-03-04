@@ -150,12 +150,28 @@ end
 
 TARGET_PICK_UP = false
 TARGET_DELETE = false
+------ CLIENT.LUA -> THREAD ------ 
 Citizen.CreateThread(function()
     while true do
         local sleep = 500
         local player = PlayerPedId()
         local playerCoords = GetEntityCoords(player)
-        for k,v in pairs(speakers) do
+        local isInVehicle = IsPedInAnyVehicle(player, false) -- Verifica se o jogador está em um veículo
+
+        for k, v in pairs(speakers) do
+            -- Verifica se o alto-falante está vinculado a um veículo
+            if v.isVehicleSpeaker and v.vehicle then
+                local vehicle = NetworkGetEntityFromNetworkId(v.vehicle)
+                if DoesEntityExist(vehicle) then
+                    -- Atualiza as coordenadas do alto-falante para as coordenadas do veículo
+                    v.coords = GetEntityCoords(vehicle)
+                else
+                    -- Se o veículo não existir mais, remove o alto-falante
+                    speakers[k] = nil
+                    SendReactMessage('stopSong', tonumber(k - 1))
+                end
+            end
+
             local distance = #(v.coords - playerCoords)
             if distance < v.maxDistance + 10 and sleep >= 100 then
                 sleep = 100
@@ -173,9 +189,13 @@ Citizen.CreateThread(function()
                 end
                 if distance < 1.5 and not v.isMoving then
                     if not movingASpeaker then
-                        ShowHelpNotification(Config.Translations.helpNotify)
+                        -- Verifica se o jogador NÃO está em um veículo antes de exibir a notificação
+                        if not isInVehicle then
+                            ShowHelpNotification(Config.Translations.helpNotify)
+                        end
                     end
-                    if IsControlJustPressed(1, Config.KeyAccessUi)  and not movingASpeaker then
+                    -- Verifica se o jogador NÃO está em um veículo antes de permitir o uso da tecla Config.KeyAccessUi
+                    if IsControlJustPressed(1, Config.KeyAccessUi) and not movingASpeaker and not isInVehicle then
                         SendReactMessage('setRepro', tonumber(k - 1))
                         if not playlistsLoaded then
                             SendReactMessage('getPlaylists')
@@ -219,22 +239,7 @@ Citizen.CreateThread(function()
                     v.isPlaying = false
                 end
             end
-            if v.isMoving then
-                if v.playerMoving >= 1 then
-                    local playerIdx = GetPlayerFromServerId(v.playerMoving)
-                    local ped = GetPlayerPed(playerIdx)
-                    local coords = GetEntityCoords(ped)
-                    if coords == GetEntityCoords(PlayerPedId()) then
-                        if movingASpeaker and k == movingSpeakerId then
-                            v.coords = coords
-                        end
-                    else
-                        v.coords = coords
-                    end
-                end
-            end
         end
-
         if movingASpeaker then
             sleep = 5
             ShowHelpNotification(Config.Translations.holdingBoombox)
@@ -382,3 +387,118 @@ exports.ox_target:addModel('gordela_boombox3', {
         end
     }
 })
+
+
+------ CLIENT.LUA -> Command ------ 
+RegisterCommand('som', function()
+    local playerPed = PlayerPedId()
+    if IsPedInAnyVehicle(playerPed, false) then
+        -- Verifica se o jogador está dentro de um veículo
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+        local vehicleCoords = GetEntityCoords(vehicle)
+        
+        -- Define o veículo como o "alto-falante"
+        local data = {
+            volume = 50,
+            url = '',
+            coords = vehicleCoords,
+            playlistPLaying = {},
+            time = 0,
+            maxDistance = 15,
+            isPlaying = false,
+            maxDuration = 5000000,
+            songId = -2,
+            permaDisabled = false,
+            paused = false,
+            pausedTime = 0,
+            isMoving = false,
+            playerMoving = -2,
+            isVehicleSpeaker = true, -- Identifica que é um alto-falante de veículo
+            vehicle = NetworkGetNetworkIdFromEntity(vehicle) -- Vincula o som ao veículo
+        }
+        
+        -- Envia os dados para o servidor
+        TriggerServerEvent('mri_Qboombox:server:createVehicleSpeaker', data)
+
+        -- Aguarda um breve momento para garantir que o alto-falante seja criado
+        Citizen.Wait(500)
+
+        -- Simula o pressionamento da tecla E para abrir a interface do alto-falante
+        local playerCoords = GetEntityCoords(playerPed)
+        for k, v in pairs(speakers) do
+            local distance = #(v.coords - playerCoords)
+            
+            if distance < 1.5 and not v.isMoving and not v.permaDisabled then
+                -- Simula o pressionamento da tecla Config.KeyAccessUi
+                SendReactMessage('setRepro', tonumber(k - 1))
+                
+                if not playlistsLoaded then
+                    SendReactMessage('getPlaylists')
+                end
+                
+                if v.playlistPLaying.songs and v.playlistPLaying.songs[v.songId] then
+                    SendReactMessage('sendSongInfo', {
+                        author = v.playlistPLaying.songs[v.songId].author,
+                        name = v.playlistPLaying.songs[v.songId].name,
+                        url = v.url,
+                        volume = v.volume,
+                        dist = v.maxDistance,
+                        maxDuration = v.maxDuration,
+                        paused = v.paused,
+                        pausedTime = v.pausedTime
+                    })
+                end
+                
+                toggleNuiFrame(true)
+                reproInUi = k - 1
+                break
+            end
+        end
+    else
+        -- Se o jogador não estiver em um veículo, mostra uma notificação
+        ShowNotification('Você precisa estar em um veículo para usar este comando.')
+    end
+end, false)
+
+
+RegisterCommand('caixa', function()
+    -- Verifica se o jogador está próximo de um speaker e simula o pressionamento da tecla
+    local player = PlayerPedId()
+    local playerCoords = GetEntityCoords(player)
+    
+    for k, v in pairs(speakers) do
+        local distance = #(v.coords - playerCoords)
+        
+        if distance < 1.5 and not v.isMoving and not v.permaDisabled then
+            -- Simula o pressionamento da tecla Config.KeyAccessUi
+            SendReactMessage('setRepro', tonumber(k - 1))
+            
+            if not playlistsLoaded then
+                SendReactMessage('getPlaylists')
+            end
+            
+            if v.playlistPLaying.songs and v.playlistPLaying.songs[v.songId] then
+                SendReactMessage('sendSongInfo', {
+                    author = v.playlistPLaying.songs[v.songId].author,
+                    name = v.playlistPLaying.songs[v.songId].name,
+                    url = v.url,
+                    volume = v.volume,
+                    dist = v.maxDistance,
+                    maxDuration = v.maxDuration,
+                    paused = v.paused,
+                    pausedTime = v.pausedTime
+                })
+            end
+            
+            toggleNuiFrame(true)
+            reproInUi = k - 1
+            break
+        end
+    end
+end, false)
+
+RegisterNetEvent('mri_Qboombox:client:deleteBoombox', function(id)
+    speakers[id].permaDisabled = true
+end)
+
+
