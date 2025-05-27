@@ -1,17 +1,47 @@
-Prop da Boombox feito por Gordela.
-Script mantido pela comunidade para funcionar com a base mri Qbox.
+# mri_Qboombox
 
-Créditos ao autor:
-Important
-You need to import the sql file in to your database
+Script de boombox para FiveM que permite tocar músicas do YouTube, desenvolvido por Gordela e mantido pela comunidade.
 
-If you like to use ESX you need to uncomment the line commented in fxmanifest that import esx
+## 📦 Dependências
 
-if the option useItem is activated you need to had the item created in your framework (Config or database) and then use the item to create a boombox
+- [oxmysql](https://github.com/overextended/oxmysql)
+- FiveM
 
-If the option useItem is not activated you need to use the command /createSpeaker
+## ⚙️ Instalação
 
-Any help in https://discord.com/invite/GarJqg77aC
+1. Adicione este recurso na pasta `resources` do seu servidor
+2. Importe o arquivo `database.sql` no seu banco de dados
+3. Configure o `Config.lua` conforme necessário
 
-Depedencies:
--oxmysql
+## 🔧 Configuração
+
+Edite o arquivo `Config.lua` para personalizar:
+
+```lua
+Config.framework = 'qbcore' -- Opções: qbcore/esx/custom
+Config.useItem = false -- Ativar/desativar uso de item
+Config.itemName = 'speaker' -- Nome do item (se useItem=true)
+Config.timeZone = "America/Sao_Paulo" -- Fuso horário do servidor
+```
+
+## 🎮 Como Usar
+
+- Se `useItem = false`, use o comando `/createSpeaker`
+- Se `useItem = true`, use o item configurado
+- Comandos disponíveis:
+  - `/fixSpeakers` - Recarrega todos os alto-falantes
+
+## 📌 Teclas
+
+- `E` (38) - Acessar UI do boombox
+- `ENTER` (191) - Posicionar o boombox
+- `E` (38) - Mudar animação
+
+## 🤝 Créditos
+
+- Autor original: Gordela
+- Mantenedor: Comunidade mri_Qbox
+
+## ❓ Suporte
+
+Discord: https://discord.com/invite/GarJqg77aC
