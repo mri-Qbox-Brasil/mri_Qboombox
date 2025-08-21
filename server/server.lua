@@ -399,3 +399,13 @@ Citizen.CreateThread(function()
         Citizen.Wait(5000) -- Verifica a cada 5 segundos
     end
 end)
+
+-- pega a localização do jogador com a caixa andando
+RegisterNetEvent('mri_Qboombox:server:syncMovingCoords', function(id, coords)
+    local src = source
+    if Speakers[id] and Speakers[id].isMoving and Speakers[id].playerMoving == src then
+        Speakers[id].coords = coords
+        -- replica coords para todos os clientes durante o movimento
+        TriggerClientEvent('mri_Qboombox:client:syncLastCoordsSync', -1, id, coords)
+    end
+end)

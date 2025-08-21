@@ -6,6 +6,9 @@ local movingASpeaker = false
 local movingObject = 0
 local movingSpeakerId = -1
 local gangAnim = true
+--edt 245
+local lastSync = 0
+
 
 function SendReactMessage(action, data)
     SendNUIMessage({
@@ -240,13 +243,35 @@ Citizen.CreateThread(function()
                 end
             end
         end
+
         if movingASpeaker then
             sleep = 5
+            -- Atualiza a posição local do speaker para acompanhar o objeto anexado
+            local srcCoords
+            if DoesEntityExist(movingObject) then
+                -- pega a posição real da boombox (mais fiel que a do ped)
+                srcCoords = GetEntityCoords(movingObject)
+            else
+                -- fallback: posição do jogador (se por algum motivo o objeto ainda não existir)
+                srcCoords = GetEntityCoords(PlayerPedId())
+            end
+
+            if speakers[movingSpeakerId] then
+                speakers[movingSpeakerId].coords = srcCoords
+            end
+
+            -- opcional: sincroniza com os demais (throttle a cada 250ms)
+            local now = GetGameTimer()
+            if (now - lastSync) > 250 then
+                TriggerServerEvent('mri_Qboombox:server:syncMovingCoords', movingSpeakerId, srcCoords)
+                lastSync = now
+            end
+
             ShowHelpNotification(Config.Translations.holdingBoombox)
+
             if IsControlJustPressed(1, Config.KeyToPlaceSpeaker) then
                 if not HasAnimDictLoaded('anim@heists@money_grab@briefcase') then
                     RequestAnimDict('anim@heists@money_grab@briefcase')
-
                     while not HasAnimDictLoaded('anim@heists@money_grab@briefcase') do
                         Citizen.Wait(1)
                     end
@@ -259,19 +284,25 @@ Citizen.CreateThread(function()
                 movingSpeakerId = 0
                 movingASpeaker = false
             end
+
             if IsControlJustPressed(1, Config.KeyToChangeAnim) then
                 gangAnim = not gangAnim
                 if gangAnim then
                     LoadAnima()
-                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 28422),0.0, 0.0, 0.1, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
+                    AttachEntityToEntity(
+                        movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 28422),
+                        0.0, 0.0, 0.1, 0.0, 0.0, 0.0, true, true, false, true, 1, true
+                    )
                     TaskPlayAnim(PlayerPedId(), 'missfinale_c2mcs_1', 'fin_c2_mcs_1_camman', 8.0, -8.0, -1, 51, 0, false, false, false)
                 else
                     ClearPedTasks(PlayerPedId())
-                    AttachEntityToEntity(movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.32, 0, -0.05, 0.10, 270.0, 60.0, true, true, false, true, 1, true)
+                    AttachEntityToEntity(
+                        movingObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005),
+                        0.32, 0.0, -0.05, 0.10, 270.0, 60.0, true, true, false, true, 1, true
+                    )
                 end
             end
-        end
-
+        end      
         Wait(sleep)
     end
 end)
@@ -361,32 +392,63 @@ RegisterCommand(Config.fixSpeakersCommand, function ()
 end)
 
 
-exports.ox_target:addModel('gordela_boombox3', {
-    {
-        type = 'client',
-        icon = 'fa-solid fa-hand',
-        label = 'Carregar boombox',
-        onSelect = function(data)
-            local obj = data.entity
+local propModel = Config.RadioProp or 'gordela_boombox3'
 
-            if obj and DoesEntityExist(obj) then
-                TARGET_PICK_UP = true
+-- ox_target
+if GetResourceState('ox_target') == 'started' then
+    exports.ox_target:addModel(propModel, {
+        {
+            type = 'client',
+            icon = 'fa-solid fa-hand',
+            label = 'Carregar boombox',
+            onSelect = function(data)
+                local obj = data.entity
+                if obj and DoesEntityExist(obj) then
+                    TARGET_PICK_UP = true
+                end
             end
-        end
-    },
-    {
-        type = 'client',
-        icon = 'fa-solid fa-arrow-up-from-bracket',
-        label = 'Guardar boombox',
-        onSelect = function(data)
-            local obj = data.entity
+        },
+        {
+            type = 'client',
+            icon = 'fa-solid fa-arrow-up-from-bracket',
+            label = 'Guardar boombox',
+            onSelect = function(data)
+                local obj = data.entity
+                if obj and DoesEntityExist(obj) then
+                    TARGET_DELETE = true
+                end
+            end
+        }
+    })
+end
 
-            if obj and DoesEntityExist(obj) then
-                TARGET_DELETE = true
-            end
-        end
-    }
-})
+-- qb-target
+if GetResourceState('qb-target') == 'started' then
+    exports['qb-target']:AddTargetModel({ propModel }, {
+        options = {
+            {
+                icon = 'fa-solid fa-hand',
+                label = 'Carregar boombox',
+                action = function(entity)
+                    if entity and DoesEntityExist(entity) then
+                        TARGET_PICK_UP = true
+                    end
+                end
+            },
+            {
+                icon = 'fa-solid fa-arrow-up-from-bracket',
+                label = 'Guardar boombox',
+                action = function(entity)
+                    if entity and DoesEntityExist(entity) then
+                        TARGET_DELETE = true
+                    end
+                end
+            }
+        },
+        distance = 2.0
+    })
+end
+
 
 
 ------ CLIENT.LUA -> Command ------ 
@@ -496,9 +558,4 @@ RegisterCommand('caixa', function()
         end
     end
 end, false)
-
-RegisterNetEvent('mri_Qboombox:client:deleteBoombox', function(id)
-    speakers[id].permaDisabled = true
-end)
-
 
