@@ -353,3 +353,59 @@ RegisterNetEvent('mri_Qboombox:server:updateObjectCoords', function(id)
         TriggerClientEvent('mri_Qboombox:client:syncLastCoords', -1, id, coords)
     end
 end)
+
+----- SERVER ----- 
+RegisterNetEvent('mri_Qboombox:server:createVehicleSpeaker', function(data)
+    local src = source
+    local enoughDistance = SufficientDistance(data.coords)
+    if enoughDistance then
+        table.insert(Speakers, data)
+        TriggerClientEvent('mri_Qboombox:client:insertSpeaker', -1, data)
+    else
+        TriggerClientEvent('mri_Qboombox:client:notify', src, Config.Translations.notEnoughDistance)
+    end
+end)
+
+
+-- Função para verificar se um objeto de rede ainda existe
+local function doesNetworkObjectExist(netId)
+    local entity = NetworkGetEntityFromNetworkId(netId)
+    return DoesEntityExist(entity)
+end
+
+-- Evento para remover um alto-falante quando o objeto de rede não existe mais
+RegisterNetEvent('mri_Qboombox:server:removeInvalidSpeaker', function(id)
+    if Speakers[id] then
+        -- Remove o alto-falante da tabela
+        Speakers[id] = nil
+        -- Sincroniza a remoção com todos os clientes
+        TriggerClientEvent('mri_Qboombox:client:deleteBoombox', -1, id)
+    end
+end)
+
+-- Verificação periódica para remover alto-falantes inválidos
+Citizen.CreateThread(function()
+    while true do
+        for id, speaker in pairs(Speakers) do
+            -- Verifica se o alto-falante está vinculado a um veículo
+            if speaker.isVehicleSpeaker and speaker.vehicle then
+                -- Verifica se o veículo ainda existe
+                if not doesNetworkObjectExist(speaker.vehicle) then
+                    -- Remove o alto-falante inválido
+                    TriggerEvent('mri_Qboombox:server:removeInvalidSpeaker', id)
+                end
+            end
+        end
+        Citizen.Wait(5000) -- Verifica a cada 5 segundos
+    end
+end)
+
+-- pega a localização do jogador com a caixa andando
+RegisterNetEvent('mri_Qboombox:server:syncMovingCoords', function(id, coords)
+    local src = source
+    if Speakers[id] and Speakers[id].isMoving and Speakers[id].playerMoving == src then
+        Speakers[id].coords = coords
+        -- replica coords para todos os clientes durante o movimento
+        TriggerClientEvent('mri_Qboombox:client:syncLastCoordsSync', -1, id, coords)
+    end
+end)
